@@ -58,7 +58,10 @@ module PlayerSecretColors
   end
 
   def self.next_guess
+    min = [6,0,0,0]
     @possibilities.each_key do |possibility|
+        min = [possibility, min].min if possibility.join('').to_i < 2200 && possibility != @secret_numbers
+        min = [possibility, min].min if possibility.join('').to_i < 2200 && @possibilities.length < 400
       if @secret_numbers.join('').to_i > 2200
         if possibility != @secret_numbers && @possibilities.length > 200
           @comp_guess = possibility
@@ -66,11 +69,7 @@ module PlayerSecretColors
           @comp_guess = possibility
         end
       else
-        if possibility != @secret_numbers && @possibilities.length > 200
-          @comp_guess = @possibilities.keys.min
-        elsif @possibilities.length < 201
-          @comp_guess = possibility
-        end
+          @comp_guess = min
       end
     end
     @guesses += 1 
@@ -89,14 +88,14 @@ module PlayerSecretColors
   def self.first_hint
     return puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 1's and 2's)" if @secret_numbers.include?(1) && @secret_numbers.include?(2)
     if !@comp_guess.any? { |num| @secret_numbers.include?(num)}
-      puts "#{@guesses}. #{@comp_guess.join}  (I missed all positions lol)"
-      @missed = 1
+       @missed = 1 
+      return puts "#{@guesses}. #{@comp_guess.join}  (I missed all positions lol)"
     elsif @match_positions.all? { |num| num == 1 } && !@match_positions.empty?
-      puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 1's)"
+     return  puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 1's)"
     elsif @match_positions.all? { |num| num == 2 } && !@match_positions.empty?
-      puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 2's)"
+      return puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 2's)"
     elsif !@match_positions.empty?
-      puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 1's and 2's)"
+      return puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 1's and 2's)"
     end
     return puts "#{@guesses}. #{@comp_guess.join}  (so there's 1's)" if @secret_numbers.include?(1)
     return puts "#{@guesses}. #{@comp_guess.join}  (so there's 2's)" if @secret_numbers.include?(2)
