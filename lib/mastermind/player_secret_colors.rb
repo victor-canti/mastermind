@@ -59,10 +59,18 @@ module PlayerSecretColors
 
   def self.next_guess
     @possibilities.each_key do |possibility|
-      if possibility != @secret_numbers && @possibilities.length > 200
-        @comp_guess = possibility
-      elsif @possibilities.length < 201
-        @comp_guess = possibility
+      if @secret_numbers.join('').to_i > 2200
+        if possibility != @secret_numbers && @possibilities.length > 200
+          @comp_guess = possibility
+        elsif @possibilities.length < 201
+          @comp_guess = possibility
+        end
+      else
+        if possibility != @secret_numbers && @possibilities.length > 200
+          @comp_guess = @possibilities.keys.min
+        elsif @possibilities.length < 201
+          @comp_guess = possibility
+        end
       end
     end
     @guesses += 1 
@@ -79,6 +87,7 @@ module PlayerSecretColors
   end
 
   def self.first_hint
+    return puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 1's and 2's)" if @secret_numbers.include?(1) && @secret_numbers.include?(2)
     if !@comp_guess.any? { |num| @secret_numbers.include?(num)}
       puts "#{@guesses}. #{@comp_guess.join}  (I missed all positions lol)"
       @missed = 1
@@ -89,9 +98,8 @@ module PlayerSecretColors
     elsif !@match_positions.empty?
       puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 1's and 2's)"
     end
-    puts "#{@guesses}. #{@comp_guess.join}  (now we know there's 1's and 2's)" if @secret_numbers.include?(1) && @secret_numbers.include?(2)
-    puts "#{@guesses}. #{@comp_guess.join}  (so there's 1's)" if @secret_numbers.include?(1)
-    puts "#{@guesses}. #{@comp_guess.join}  (so there's 2's)" if @secret_numbers.include?(2)
+    return puts "#{@guesses}. #{@comp_guess.join}  (so there's 1's)" if @secret_numbers.include?(1)
+    return puts "#{@guesses}. #{@comp_guess.join}  (so there's 2's)" if @secret_numbers.include?(2)
   end
 
   def self.second_hint
@@ -105,6 +113,7 @@ module PlayerSecretColors
         puts hint += "now we know there's #{num}'s)" if @match_positions.uniq.length == 1
       end
     end
+    return puts "#{@guesses}. #{@comp_guess.join}  (you just switch the order, try new numbers)" if @secret_numbers.include?(1) && @secret_numbers.include?(2)
   end
 
   def self.third_hint
@@ -113,6 +122,7 @@ module PlayerSecretColors
       puts "#{@guesses}. #{@comp_guess.join}  (there's no pegs right here)"
     else
       @match_positions.each.with_index do |num, position|
+        return puts "#{@guesses}. #{@comp_guess.join}  (good job! Now we got #{@match_positions[2]} as well)" if @secret_numbers.join('').to_i < 2200
         puts hint += "now we have almost all the numbers, you're missing just one of them)" if @match_positions.uniq.length == 1
         hint += "now we know there's #{num} and " if @match_positions.uniq.length > 1 && position == 0
         hint += "#{num}'s)" if @match_positions.uniq.length > 1 && position == 1
@@ -122,6 +132,7 @@ module PlayerSecretColors
   end
 
   def self.fourth_hint
+    return puts "#{@guesses}. #{@comp_guess.join}  (we are almost there c'mon)" if @secret_numbers.join('').to_i < 2200
     hint = "#{@guesses}. #{@comp_guess.join}  ("
     if !@comp_guess.any? { |num| @secret_numbers.include?(num)}
       puts "#{@guesses}. #{@comp_guess.join}  (there's no pegs right here)"
