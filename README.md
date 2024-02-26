@@ -10,3 +10,4 @@ the secret colors or if you want to choose the secret colors.
 
 ## Link to play
 
+<a href="https://replit.com/@victor1canti/mastermind" target="_blank">Mastermind</a>
